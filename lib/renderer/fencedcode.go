@@ -4,6 +4,7 @@ import (
 	"embed"
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/yuin/goldmark/ast"
@@ -33,6 +34,9 @@ var supportedCodeLanguagesFile embed.FS
 var (
 	SupportedCodeBlockLanguages = loadSupportCodeLanguage("supported_code_language.json")
 	DefaultCodeBlockLanguage    = "plain"
+	CodeBlockTheme              = "RDark"
+	CodeBlockShowLineNumbers    = true
+	CodeBlockCollapse           = true
 )
 
 // NewConfluenceFencedCodeBlockHTMLRender returns a new ConfluenceFencedCodeBlockHTMLRender.
@@ -74,8 +78,9 @@ func (r *ConfluenceFencedCodeBlockHTMLRender) renderConfluenceFencedCode(w util.
 		if entering {
 			// insert a code-macro
 			s := `<ac:structured-macro ac:name="code" ac:schema-version="1">`
-			s = s + `<ac:parameter ac:name="theme">Confluence</ac:parameter>`
-			s = s + `<ac:parameter ac:name="linenumbers">true</ac:parameter>`
+			s = s + `<ac:parameter ac:name="theme">` + CodeBlockTheme + `</ac:parameter>`
+			s = s + `<ac:parameter ac:name="linenumbers">` + strconv.FormatBool(CodeBlockShowLineNumbers) + `</ac:parameter>`
+			s = s + `<ac:parameter ac:name="collapse">` + strconv.FormatBool(CodeBlockCollapse) + `</ac:parameter>`
 
 			if language != nil {
 				supportedLanguage := getSupportLanguage(strings.ToLower(langString))

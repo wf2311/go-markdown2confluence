@@ -3,6 +3,7 @@ package cmd
 import (
 	"crypto/tls"
 	"fmt"
+	"github.com/justmiles/go-markdown2confluence/lib/renderer"
 	"log"
 	"net/http"
 	"os"
@@ -26,13 +27,21 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&m.Endpoint, "endpoint", "e", lib.DefaultEndpoint, "Confluence endpoint. (Alternatively set CONFLUENCE_ENDPOINT environment variable)")
 	rootCmd.PersistentFlags().BoolVarP(&m.InsecureTLS, "insecuretls", "i", false, "Skip certificate validation. (e.g. for self-signed certificates)")
 	rootCmd.PersistentFlags().StringVar(&m.Parent, "parent", "", "Optional parent page to next content under")
+	rootCmd.PersistentFlags().StringVarP(&m.ParentId, "parent-id", "g", "", "Optional parent page id to next content under")
 	rootCmd.PersistentFlags().BoolVarP(&m.Debug, "debug", "d", false, "Enable debug logging")
 	rootCmd.PersistentFlags().BoolVarP(&m.UseDocumentTitle, "use-document-title", "", false, "Will use the Markdown document title (# Title) if available")
 	rootCmd.PersistentFlags().BoolVarP(&m.WithHardWraps, "hardwraps", "w", false, "Render newlines as <br />")
 	rootCmd.PersistentFlags().IntVarP(&m.Since, "modified-since", "m", 0, "Only upload files that have modifed in the past n minutes")
 	rootCmd.PersistentFlags().StringVarP(&m.Title, "title", "t", "", "Set the page title on upload (defaults to filename without extension)")
 	rootCmd.PersistentFlags().StringSliceVarP(&m.ExcludeFilePatterns, "exclude", "x", []string{}, "list of exclude file patterns (regex) for that will be applied on markdown file paths")
+	rootCmd.PersistentFlags().StringVarP(&m.CodeBlockTheme, "code-block-theme", "y", "RDark", "Set the code block theme,default 'RDark'")
+	rootCmd.PersistentFlags().BoolVarP(&m.CodeBlockCollapse, "code-block-collapse", "z", false, "Set the code block collapse,default 'false'")
+	rootCmd.PersistentFlags().BoolVarP(&m.CodeBlockShowLineNumbers, "code-block-show-line-numbers", "l", true, "Set the code block show line numbers,default 'true'")
+
 	m.SourceEnvironmentVariables()
+	renderer.CodeBlockTheme = m.CodeBlockTheme
+	renderer.CodeBlockCollapse = m.CodeBlockCollapse
+	renderer.CodeBlockShowLineNumbers = m.CodeBlockShowLineNumbers
 
 }
 

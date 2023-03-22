@@ -63,22 +63,27 @@ Usage:
   markdown2confluence [flags]
 
 Flags:
-  -a, --access-token string   Confluence access-token. (Alternatively set CONFLUENCE_ACCESS_TOKEN environment variable)
-  -c, --comment string        (Optional) Add comment to page
-  -d, --debug                 Enable debug logging
-  -e, --endpoint string       Confluence endpoint. (Alternatively set CONFLUENCE_ENDPOINT environment variable) (default "https://mydomain.atlassian.net/wiki")
-  -x, --exclude strings       list of exclude file patterns (regex) for that will be applied on markdown file paths
-  -w, --hardwraps             Render newlines as <br />
-  -h, --help                  help for markdown2confluence
-  -i, --insecuretls           Skip certificate validation. (e.g. for self-signed certificates)
-  -m, --modified-since int    Only upload files that have modifed in the past n minutes
-      --parent string         Optional parent page to next content under
-  -p, --password string       Confluence password. (Alternatively set CONFLUENCE_PASSWORD environment variable)
-  -s, --space string          Space in which page should be created
-  -t, --title string          Set the page title on upload (defaults to filename without extension)
-      --use-document-title    Will use the Markdown document title (# Title) if available
-  -u, --username string       Confluence username. (Alternatively set CONFLUENCE_USERNAME environment variable)
-      --version               version for markdown2confluence
+  -a, --access-token string            Confluence access-token. (Alternatively set CONFLUENCE_ACCESS_TOKEN environment variable)
+  -z, --code-block-collapse            Set the code block collapse,default 'false'
+  -l, --code-block-show-line-numbers   Set the code block show line numbers,default 'true' (default true)
+  -y, --code-block-theme string        Set the code block theme,default 'RDark' (default "RDark")
+  -c, --comment string                 (Optional) Add comment to page
+  -d, --debug                          Enable debug logging
+  -e, --endpoint string                Confluence endpoint. (Alternatively set CONFLUENCE_ENDPOINT environment variable) (default "https://mydomain.atlassian.net/wiki")
+  -x, --exclude strings                list of exclude file patterns (regex) for that will be applied on markdown file paths
+  -w, --hardwraps                      Render newlines as <br />
+  -h, --help                           help for markdown2confluence
+  -i, --insecuretls                    Skip certificate validation. (e.g. for self-signed certificates)
+  -m, --modified-since int             Only upload files that have modifed in the past n minutes
+      --parent string                  Optional parent page to next content under
+  -g, --parent-id string               Optional parent page id to next content under
+  -p, --password string                Confluence password. (Alternatively set CONFLUENCE_PASSWORD environment variable)
+  -s, --space string                   Space in which page should be created
+  -t, --title string                   Set the page title on upload (defaults to filename without extension)
+      --use-document-title             Will use the Markdown document title (# Title) if available
+  -u, --username string                Confluence username. (Alternatively set CONFLUENCE_USERNAME environment variable)
+  -v, --version                        version for markdown2confluence
+
 ```
 
 ## Examples

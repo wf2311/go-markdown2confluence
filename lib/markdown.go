@@ -32,24 +32,28 @@ const (
 
 // Markdown2Confluence stores the settings for each run
 type Markdown2Confluence struct {
-	Space               string
-	Comment             string
-	Title               string
-	File                string
-	Ancestor            string
-	Debug               bool
-	UseDocumentTitle    bool
-	WithHardWraps       bool
-	Since               int
-	Username            string
-	Password            string
-	AccessToken         string
-	InsecureTLS         bool
-	Endpoint            string
-	Parent              string
-	SourceMarkdown      []string
-	ExcludeFilePatterns []string
-	client              *confluence.Client
+	Space                    string
+	Comment                  string
+	Title                    string
+	File                     string
+	Ancestor                 string
+	Debug                    bool
+	UseDocumentTitle         bool
+	WithHardWraps            bool
+	Since                    int
+	Username                 string
+	Password                 string
+	AccessToken              string
+	InsecureTLS              bool
+	Endpoint                 string
+	Parent                   string
+	ParentId                 string
+	SourceMarkdown           []string
+	ExcludeFilePatterns      []string
+	client                   *confluence.Client
+	CodeBlockTheme           string
+	CodeBlockShowLineNumbers bool
+	CodeBlockCollapse        bool
 }
 
 // CreateClient returns a new markdown client
@@ -63,9 +67,9 @@ func (m *Markdown2Confluence) CreateClient() {
 }
 
 // SourceEnvironmentVariables overrides Markdown2Confluence with any environment variables that are set
-//  - CONFLUENCE_USERNAME
-//  - CONFLUENCE_PASSWORD
-//  - CONFLUENCE_ENDPOINT
+//   - CONFLUENCE_USERNAME
+//   - CONFLUENCE_PASSWORD
+//   - CONFLUENCE_ENDPOINT
 func (m *Markdown2Confluence) SourceEnvironmentVariables() {
 	var s string
 	s = os.Getenv("CONFLUENCE_USERNAME")
@@ -197,6 +201,10 @@ func (m *Markdown2Confluence) Run() []error {
 							Path:    path,
 							Parents: tempParents,
 							Title:   tempTitle,
+						}
+
+						if m.ParentId != "" {
+							md.Ancestor = m.ParentId
 						}
 
 						if m.Parent != "" {
