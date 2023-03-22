@@ -3,6 +3,7 @@ package renderer
 import (
 	"bytes"
 	"fmt"
+	"net/url"
 	"os"
 	"path"
 	"path/filepath"
@@ -101,7 +102,7 @@ func RenderImageAttributes(w util.BufWriter, node ast.Node, filter util.BytesFil
 
 func localFile(filePath string, destination []byte) (string, error) {
 
-	localizedPath := string(destination)
+	localizedPath, _ := urlPathToFilePath(string(destination))
 	_, err := os.Stat(localizedPath)
 	if err == nil {
 		return localizedPath, nil
@@ -110,11 +111,15 @@ func localFile(filePath string, destination []byte) (string, error) {
 	//path.Dir currDir is workpath so "path.Dir is '.'"
 	//And so make a absolute path for check file
 	localizedAbsPath, _ := filepath.Abs(filePath)
-	localizedPath = path.Join(filepath.Dir(localizedAbsPath), string(destination))
+	localizedPath = path.Join(filepath.Dir(localizedAbsPath), localizedPath)
 	_, err = os.Stat(localizedPath)
 	if err == nil {
 		return localizedPath, nil
 	}
 
 	return "", fmt.Errorf("not a local file")
+}
+
+func urlPathToFilePath(filePath string) (string, interface{}) {
+	return url.PathUnescape(filePath)
 }
