@@ -1,0 +1,265 @@
+[
+  {
+    "aliases": [
+      "actionscript3",
+      "as3",
+      "actionscript"
+    ],
+    "webResource": "com.atlassian.confluence.ext.newcode-macro-plugin:syntaxhighlighter-brushes",
+    "builtIn": true,
+    "name": "AS3",
+    "friendlyName": "ActionScript"
+  },
+  {
+    "aliases": [
+      "applescript"
+    ],
+    "webResource": "com.atlassian.confluence.ext.newcode-macro-plugin:syntaxhighlighter-brushes",
+    "builtIn": true,
+    "name": "AppleScript",
+    "friendlyName": "AppleScript"
+  },
+  {
+    "aliases": [
+      "bash",
+      "shell"
+    ],
+    "webResource": "com.atlassian.confluence.ext.newcode-macro-plugin:syntaxhighlighter-brushes",
+    "builtIn": true,
+    "name": "Bash",
+    "friendlyName": "Bash"
+  },
+  {
+    "aliases": [
+      "c#",
+      "c-sharp",
+      "csharp"
+    ],
+    "webResource": "com.atlassian.confluence.ext.newcode-macro-plugin:syntaxhighlighter-brushes",
+    "builtIn": true,
+    "name": "CSharp",
+    "friendlyName": "C#"
+  },
+  {
+    "aliases": [
+      "cpp",
+      "c"
+    ],
+    "webResource": "com.atlassian.confluence.ext.newcode-macro-plugin:syntaxhighlighter-brushes",
+    "builtIn": true,
+    "name": "Cpp",
+    "friendlyName": "C++"
+  },
+  {
+    "aliases": [
+      "css"
+    ],
+    "webResource": "com.atlassian.confluence.ext.newcode-macro-plugin:syntaxhighlighter-brushes",
+    "builtIn": true,
+    "name": "CSS",
+    "friendlyName": "CSS"
+  },
+  {
+    "aliases": [
+      "coldfusion",
+      "cf"
+    ],
+    "webResource": "com.atlassian.confluence.ext.newcode-macro-plugin:syntaxhighlighter-brushes",
+    "builtIn": true,
+    "name": "ColdFusion",
+    "friendlyName": "ColdFusion"
+  },
+  {
+    "aliases": [
+      "delphi",
+      "pascal",
+      "pas"
+    ],
+    "webResource": "com.atlassian.confluence.ext.newcode-macro-plugin:syntaxhighlighter-brushes",
+    "builtIn": true,
+    "name": "Delphi",
+    "friendlyName": "Delphi"
+  },
+  {
+    "aliases": [
+      "diff",
+      "patch"
+    ],
+    "webResource": "com.atlassian.confluence.ext.newcode-macro-plugin:syntaxhighlighter-brushes",
+    "builtIn": true,
+    "name": "Diff",
+    "friendlyName": "Diff"
+  },
+  {
+    "aliases": [
+      "erl",
+      "erlang"
+    ],
+    "webResource": "com.atlassian.confluence.ext.newcode-macro-plugin:syntaxhighlighter-brushes",
+    "builtIn": true,
+    "name": "Erland",
+    "friendlyName": "Erlang"
+  },
+  {
+    "aliases": [
+      "groovy"
+    ],
+    "webResource": "com.atlassian.confluence.ext.newcode-macro-plugin:syntaxhighlighter-brushes",
+    "builtIn": true,
+    "name": "Groovy",
+    "friendlyName": "Groovy"
+  },
+  {
+    "aliases": [
+      "xml",
+      "xhtml",
+      "xslt",
+      "html",
+      "html/xml"
+    ],
+    "webResource": "com.atlassian.confluence.ext.newcode-macro-plugin:syntaxhighlighter-brushes",
+    "builtIn": true,
+    "name": "Xml",
+    "friendlyName": "HTML and XML"
+  },
+  {
+    "aliases": [
+      "java"
+    ],
+    "webResource": "com.atlassian.confluence.ext.newcode-macro-plugin:syntaxhighlighter-brushes",
+    "builtIn": true,
+    "name": "Java",
+    "friendlyName": "Java"
+  },
+  {
+    "aliases": [
+      "jfx",
+      "javafx"
+    ],
+    "webResource": "com.atlassian.confluence.ext.newcode-macro-plugin:syntaxhighlighter-brushes",
+    "builtIn": true,
+    "name": "JavaFX",
+    "friendlyName": "Java FX"
+  },
+  {
+    "aliases": [
+      "js",
+      "jscript",
+      "javascript"
+    ],
+    "webResource": "com.atlassian.confluence.ext.newcode-macro-plugin:syntaxhighlighter-brushes",
+    "builtIn": true,
+    "name": "JScript",
+    "friendlyName": "JavaScript"
+  },
+  {
+    "aliases": [
+      "php"
+    ],
+    "webResource": "com.atlassian.confluence.ext.newcode-macro-plugin:syntaxhighlighter-brushes",
+    "builtIn": true,
+    "name": "Php",
+    "friendlyName": "PHP"
+  },
+  {
+    "aliases": [
+      "perl",
+      "Perl",
+      "pl"
+    ],
+    "webResource": "com.atlassian.confluence.ext.newcode-macro-plugin:syntaxhighlighter-brushes",
+    "builtIn": true,
+    "name": "Perl",
+    "friendlyName": "Perl"
+  },
+  {
+    "aliases": [
+      "text",
+      "plain"
+    ],
+    "webResource": "com.atlassian.confluence.ext.newcode-macro-plugin:syntaxhighlighter-brushes",
+    "builtIn": true,
+    "name": "Plain",
+    "friendlyName": "Plain Text"
+  },
+  {
+    "aliases": [
+      "powershell",
+      "ps"
+    ],
+    "webResource": "com.atlassian.confluence.ext.newcode-macro-plugin:syntaxhighlighter-brushes",
+    "builtIn": true,
+    "name": "PowerShell",
+    "friendlyName": "PowerShell"
+  },
+  {
+    "aliases": [
+      "py",
+      "python"
+    ],
+    "webResource": "com.atlassian.confluence.ext.newcode-macro-plugin:syntaxhighlighter-brushes",
+    "builtIn": true,
+    "name": "Python",
+    "friendlyName": "Python"
+  },
+  {
+    "aliases": [
+      "ruby",
+      "rails",
+      "ror",
+      "rb"
+    ],
+    "webResource": "com.atlassian.confluence.ext.newcode-macro-plugin:syntaxhighlighter-brushes",
+    "builtIn": true,
+    "name": "Ruby",
+    "friendlyName": "Ruby"
+  },
+  {
+    "aliases": [
+      "sql"
+    ],
+    "webResource": "com.atlassian.confluence.ext.newcode-macro-plugin:syntaxhighlighter-brushes",
+    "builtIn": true,
+    "name": "Sql",
+    "friendlyName": "SQL"
+  },
+  {
+    "aliases": [
+      "sass",
+      "scss"
+    ],
+    "webResource": "com.atlassian.confluence.ext.newcode-macro-plugin:syntaxhighlighter-brushes",
+    "builtIn": true,
+    "name": "Sass",
+    "friendlyName": "Sass"
+  },
+  {
+    "aliases": [
+      "scala"
+    ],
+    "webResource": "com.atlassian.confluence.ext.newcode-macro-plugin:syntaxhighlighter-brushes",
+    "builtIn": true,
+    "name": "Scala",
+    "friendlyName": "Scala"
+  },
+  {
+    "aliases": [
+      "vb",
+      "vbnet"
+    ],
+    "webResource": "com.atlassian.confluence.ext.newcode-macro-plugin:syntaxhighlighter-brushes",
+    "builtIn": true,
+    "name": "Vb",
+    "friendlyName": "Visual Basic"
+  },
+  {
+    "aliases": [
+      "yml",
+      "yaml"
+    ],
+    "webResource": "com.atlassian.confluence.ext.newcode-macro-plugin:syntaxhighlighter-brushes",
+    "builtIn": true,
+    "name": "Yaml",
+    "friendlyName": "YAML"
+  }
+]

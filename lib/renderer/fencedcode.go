@@ -1,6 +1,9 @@
 package renderer
 
 import (
+	"embed"
+	"encoding/json"
+	"fmt"
 	"strings"
 
 	"github.com/yuin/goldmark/ast"
@@ -21,6 +24,15 @@ const (
 
 	MacroContentKeyPlainTextBody string = "plain-text-body"
 	MacroContentKeyRichTextBody  string = "rich-text-body"
+)
+
+type StringMap map[string]string
+
+//go:embed supported_code_language.json
+var supportedCodeLanguagesFile embed.FS
+var (
+	SupportedCodeBlockLanguages = loadSupportCodeLanguage("supported_code_language.json")
+	DefaultCodeBlockLanguage    = "plain"
 )
 
 // NewConfluenceFencedCodeBlockHTMLRender returns a new ConfluenceFencedCodeBlockHTMLRender.
@@ -66,7 +78,8 @@ func (r *ConfluenceFencedCodeBlockHTMLRender) renderConfluenceFencedCode(w util.
 			s = s + `<ac:parameter ac:name="linenumbers">true</ac:parameter>`
 
 			if language != nil {
-				s = s + `<ac:parameter ac:name="language">` + langString + `</ac:parameter>`
+				supportedLanguage := getSupportLanguage(strings.ToLower(langString))
+				s = s + `<ac:parameter ac:name="language">` + supportedLanguage + `</ac:parameter>`
 			}
 
 			s = s + `<ac:plain-text-body><![CDATA[ `
@@ -133,4 +146,43 @@ func (r *ConfluenceFencedCodeBlockHTMLRender) writeMacro(w util.BufWriter, sourc
 	w.WriteString(parameters.String())
 	// and finish it off
 	w.WriteString("</ac:structured-macro>")
+}
+
+func getSupportLanguage(key string) string {
+	if SupportedCodeBlockLanguages == nil {
+		return key
+	}
+	if value, ok := SupportedCodeBlockLanguages[key]; ok {
+		return value
+	}
+	println(fmt.Sprintf("Unsupported code block language: %s,Use %s default", key, DefaultCodeBlockLanguage))
+	return DefaultCodeBlockLanguage
+}
+
+func loadSupportCodeLanguage(configFile string) StringMap {
+	jsonData, err := supportedCodeLanguagesFile.ReadFile(configFile)
+	if err != nil {
+		println(fmt.Sprintf("error reading file: %v", err))
+		return nil
+	}
+
+	var result []map[string]interface{}
+
+	err = json.Unmarshal(jsonData, &result)
+	if err != nil {
+		println(fmt.Sprintf("error parsing JSON data: %v", err))
+		return nil
+	}
+
+	// 处理结果
+	resultMap := make(StringMap)
+	for _, obj := range result {
+		name := obj["name"].(string)
+		aliases := obj["aliases"].([]interface{})
+		for _, a := range aliases {
+			resultMap[a.(string)] = name
+		}
+	}
+
+	return resultMap
 }
