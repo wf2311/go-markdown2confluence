@@ -4,6 +4,7 @@ import (
 	"embed"
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"strconv"
 	"strings"
 
@@ -39,6 +40,13 @@ var (
 	CodeBlockCollapse           = true
 )
 
+var (
+	// PlantUmlCodeTypes is a list of code types that are supported by PlantUML
+	PlantUmlCodeTypes         = [...]string{"plantuml", "puml", "pu", "plant"}
+	PlantUmlShowFormat        = [...]string{"SVG", "PNG"}
+	DefaultPlantUmlShowFormat = "SVG"
+)
+
 // NewConfluenceFencedCodeBlockHTMLRender returns a new ConfluenceFencedCodeBlockHTMLRender.
 func NewConfluenceFencedCodeBlockHTMLRender(opts ...html.Option) renderer.NodeRenderer {
 	r := &ConfluenceFencedCodeBlockHTMLRender{
@@ -68,7 +76,9 @@ func (r *ConfluenceFencedCodeBlockHTMLRender) renderConfluenceFencedCode(w util.
 	if language != nil {
 		langString = string(language)
 	}
-
+	if isPlantUmlCodeBlock(langString) {
+		return renderPlantUmlCodeBlock(w, source, node, entering)
+	}
 	switch langString {
 	case LanguageStringConfluenceMacro:
 		if entering {
@@ -94,6 +104,32 @@ func (r *ConfluenceFencedCodeBlockHTMLRender) renderConfluenceFencedCode(w util.
 			s := ` ]]></ac:plain-text-body></ac:structured-macro>`
 			_, _ = w.WriteString(s)
 		}
+	}
+	return ast.WalkContinue, nil
+}
+
+func renderPlantUmlCodeBlock(w util.BufWriter, source []byte, node ast.Node, entering bool) (ast.WalkStatus, error) {
+	n := node.(*ast.FencedCodeBlock)
+	if entering {
+		// insert a code-macro
+		s := `<ac:structured-macro ac:name="plantumlrender" ac:schema-version="1">`
+		s = s + `<ac:parameter ac:name="format">` + DefaultPlantUmlShowFormat + `</ac:parameter>`
+		s = s + `<ac:parameter ac:name="atlassian-macro-output-type">INLINE</ac:parameter>`
+		s = s + `<ac:rich-text-body><p style="text-align: left;">`
+		_, _ = w.WriteString(s)
+		l := n.Lines().Len()
+		content := strings.Builder{}
+		for i := 0; i < l; i++ {
+			line := n.Lines().At(i)
+			text := string(line.Value(source))
+			escapedLine := template.HTMLEscapeString(text)
+			wrappedLine := fmt.Sprintf("<code class=\"plain\" style=\"text-align: left;\">%s</code><br/>", escapedLine)
+			content.WriteString(wrappedLine)
+		}
+		w.WriteString(content.String())
+	} else {
+		s := `</p></ac:rich-text-body></ac:structured-macro>`
+		_, _ = w.WriteString(s)
 	}
 	return ast.WalkContinue, nil
 }
@@ -190,4 +226,14 @@ func loadSupportCodeLanguage(configFile string) StringMap {
 	}
 
 	return resultMap
+}
+
+func isPlantUmlCodeBlock(codeType string) bool {
+	for _, t := range PlantUmlCodeTypes {
+		if t == codeType {
+			println(fmt.Sprintf("PlantUml code block type: %s", codeType))
+			return true
+		}
+	}
+	return false
 }

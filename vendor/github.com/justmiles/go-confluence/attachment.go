@@ -253,8 +253,9 @@ func (client *Client) UpdateAttachment(contentID, attachmentID, path string, min
 	if err != nil {
 		return nil, err
 	}
-	hashInBytes := hash.Sum(nil)[:16]
+	hashInBytes := hash.Sum(nil)
 	md5HashString := hex.EncodeToString(hashInBytes)
+	fmt.Printf("file:%s,md5: %s", path, md5HashString)
 
 	err = writer.WriteField("comment", md5HashString)
 	if err != nil {
@@ -318,8 +319,7 @@ func (client *Client) AddAttachment(contentID, path string) (*Attachment, error)
 	if err != nil {
 		return nil, err
 	}
-	hashInBytes := hash.Sum(nil)[:16]
-	md5HashString := hex.EncodeToString(hashInBytes)
+	md5HashString := hex.EncodeToString(hash.Sum(nil))
 
 	err = writer.WriteField("comment", md5HashString)
 	if err != nil {
