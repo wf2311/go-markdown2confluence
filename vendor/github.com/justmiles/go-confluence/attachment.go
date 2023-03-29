@@ -112,6 +112,16 @@ type AttachmentLinks struct {
 	Thumbnail string `json:"thumbnail"`
 }
 
+type UpdateAttachmentNameRequest struct {
+	Title string `json:"title"`
+	ID    string `json:"id"`
+	Version Version `json:"version"`
+}
+type Version struct {
+	Number    int  `json:"number"`
+	MajorEdit bool `json:"majorEdit"`
+}
+
 // UnmarshalJSON Custom Unmarshaller
 func (a *AttachmentLinks) UnmarshalJSON(data []byte) error {
 	type Alias AttachmentLinks
@@ -192,6 +202,26 @@ func (client *Client) GetAttachment(contentID, attachmentID string) (*Attachment
 	return &attachments.Results[0], nil
 }
 
+// GetAttachments ...
+func (client *Client) GetAttachments(contentID string) (*[]Attachment, error) {
+	endpoint := client.newAttachmentEndpoint(contentID)
+
+	res, err := client.request("GET", endpoint, "", nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var attachments Attachments
+	err = json.Unmarshal(res, &attachments)
+	if err != nil {
+		return nil, err
+	}
+	if len(attachments.Results) < 1 {
+		return nil, fmt.Errorf("empty list")
+	}
+	return &attachments.Results, nil
+}
+
 // GetAttachmentByFilename ...
 func (client *Client) GetAttachmentByFilename(contentID, filename string) (*Attachment, error) {
 	endpoint := client.newAttachmentEndpoint(contentID)
@@ -217,6 +247,34 @@ func (client *Client) GetAttachmentByFilename(contentID, filename string) (*Atta
 	return &attachments.Results[0], nil
 }
 
+func (client *Client) UpdateAttachmentName(contentID, attachmentID string, path string) (*Attachment, error) {
+	version := Version{
+		Number:    1,
+		MajorEdit: false,
+	}
+	request := UpdateAttachmentNameRequest{
+		ID:    attachmentID,
+		Title: path,
+		Version: version,
+	}
+	body, err := json.Marshal(request)
+	if err != nil {
+		return nil, err
+	}
+	endpoint := client.attachmentEndpoint(contentID, attachmentID)
+	res, err := client.request("PUT", endpoint, "", bytes.NewReader(body))
+	if err != nil {
+		return nil, err
+	}
+
+	var attachment Attachment
+	err = json.Unmarshal(res, &attachment)
+	if err != nil {
+		return nil, err
+	}
+	return &attachment, nil
+}
+
 // UpdateAttachment ...
 func (client *Client) UpdateAttachment(contentID, attachmentID, path string, minorEdit bool) (*Attachment, error) {
 	body := &bytes.Buffer{}
@@ -233,7 +291,13 @@ func (client *Client) UpdateAttachment(contentID, attachmentID, path string, min
 		return nil, err
 	}
 
-	part, err := writer.CreateFormFile("file", fi.Name())
+
+	md5HashString, err := GetFileMD5Hash(path)
+	if err != nil {
+		return nil, err
+	}
+
+	part, err := writer.CreateFormFile("file", md5HashString+"_"+fi.Name())
 	if err != nil {
 		return nil, err
 	}
@@ -247,15 +311,6 @@ func (client *Client) UpdateAttachment(contentID, attachmentID, path string, min
 	if err != nil {
 		return nil, err
 	}
-
-	hash := md5.New()
-	_, err = io.Copy(hash, file)
-	if err != nil {
-		return nil, err
-	}
-	hashInBytes := hash.Sum(nil)
-	md5HashString := hex.EncodeToString(hashInBytes)
-	fmt.Printf("file:%s,md5: %s", path, md5HashString)
 
 	err = writer.WriteField("comment", md5HashString)
 	if err != nil {
@@ -304,7 +359,12 @@ func (client *Client) AddAttachment(contentID, path string) (*Attachment, error)
 		return nil, err
 	}
 
-	part, err := writer.CreateFormFile("file", fi.Name())
+	md5HashString, err := GetFileMD5Hash(path)
+	if err != nil {
+		return nil, err
+	}
+
+	part, err := writer.CreateFormFile("file", md5HashString+"_"+fi.Name())
 	if err != nil {
 		return nil, err
 	}
@@ -313,13 +373,6 @@ func (client *Client) AddAttachment(contentID, path string) (*Attachment, error)
 	if err != nil {
 		return nil, err
 	}
-
-	hash := md5.New()
-	_, err = io.Copy(hash, file)
-	if err != nil {
-		return nil, err
-	}
-	md5HashString := hex.EncodeToString(hash.Sum(nil))
 
 	err = writer.WriteField("comment", md5HashString)
 	if err != nil {
@@ -359,13 +412,22 @@ func (client *Client) AddAttachment(contentID, path string) (*Attachment, error)
 func (client *Client) AddUpdateAttachments(contentID string, files []string) ([]*Attachment, []error) {
 	var results []*Attachment
 	var errors []error
+
+	attachmentsMap, _ := client.GetPageAttachmentsAndToMap(contentID)
+
 	for _, f := range files {
 		filename := path.Base(f)
-		attachment, err := client.GetAttachmentByFilename(contentID, filename)
-		if err != nil {
+		attachment, err := matchAttachmentByMd5(f, attachmentsMap)
+		if err != nil || attachment == nil {
 			attachment, err = client.AddAttachment(contentID, f)
 		} else {
-			attachment, err = client.UpdateAttachment(contentID, attachment.ID, f, true)
+			fmt.Println(fmt.Sprintf("attachment %s already exists, skipping,md5=%s", filename,
+				attachment.Metadata.Comment))
+			filename_with_md5 := attachment.Metadata.Comment + "_" + filename
+			if filename_with_md5 != attachment.Title {
+				fmt.Println(fmt.Sprintf("updating attachment %s name to %s", attachment.Title, filename_with_md5))
+				attachment, err = client.UpdateAttachmentName(contentID, attachment.ID, filename_with_md5)
+			}
 		}
 		if err == nil {
 			results = append(results, attachment)
@@ -374,6 +436,31 @@ func (client *Client) AddUpdateAttachments(contentID string, files []string) ([]
 		}
 	}
 	return results, errors
+}
+
+func matchAttachmentByMd5(path string, maps map[string]*Attachment) (*Attachment, error) {
+	md5HashString, err := GetFileMD5Hash(path)
+	if err != nil {
+		return nil, err
+	}
+	attachment := maps[md5HashString]
+	//if attachment != nil {
+	//	fmt.Println(fmt.Sprintf("match attachment %s by md5=%s", attachment.Title, md5HashString))
+	//}
+	return attachment, nil
+}
+
+func (client *Client) GetPageAttachmentsAndToMap(pageID string) (map[string]*Attachment, error) {
+	attachments, err := client.GetAttachments(pageID)
+	if err != nil {
+		return nil, err
+	}
+	m := make(map[string]*Attachment)
+	for i, a := range *attachments {
+		m[a.Metadata.Comment] = &(*attachments)[i]
+		//fmt.Println(fmt.Sprintf("page:%s,exist attachment %s,md5=%s", pageID, a.Title, a.Metadata.Comment))
+	}
+	return m, nil
 }
 
 // FetchAttachmentMetaData ...
@@ -448,3 +535,19 @@ func (client *Client) DownloadFromURL(url, outputFilepath string) error {
 
 	return err
 }
+
+
+func GetFileMD5Hash(filePath string) (string, error) {
+	file, err := os.Open(filePath)
+	if err != nil {
+		return "", err
+	}
+	defer file.Close()
+
+	hash := md5.New()
+	if _, err := io.Copy(hash, file); err != nil {
+		return "", err
+	}
+	return hex.EncodeToString(hash.Sum(nil)), nil
+}
+

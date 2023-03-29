@@ -3,6 +3,7 @@ package renderer
 import (
 	"bytes"
 	"fmt"
+	"github.com/justmiles/go-confluence"
 	"net/url"
 	"os"
 	"path"
@@ -52,7 +53,8 @@ func (r *ConfluenceImageHTMLRender) renderConfluenceImage(w util.BufWriter, sour
 	if f, err := localFile(r.filePath, n.Destination); err == nil {
 		r.Images = append(r.Images, f)
 		_, _ = w.WriteString(`<ac:image><ri:attachment ri:filename="`)
-		_, _ = w.WriteString(path.Base(f))
+		fileMD5Hash, _ := confluence.GetFileMD5Hash(f)
+		_, _ = w.WriteString(fileMD5Hash + "_" + path.Base(f))
 		_, _ = w.WriteString(`"/></ac:image>`)
 
 		return ast.WalkSkipChildren, nil
